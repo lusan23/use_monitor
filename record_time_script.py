@@ -6,7 +6,7 @@ import psutil
 
 def str2time(string_):
     return datetime.strptime(string_, "%H:%M:%S")
-    
+
 def is_shutdown() -> bool:
     '''
     Verify if it`s second time the script is executed 
@@ -30,14 +30,29 @@ def calc_time_spent() -> timedelta:
     # Get the current time
     current_time = datetime.datetime.now()
 
+    # Calculate the difference
+    uptime = current_time - boot_time
+
+    return uptime
+        
 def string_to_timedelta(value):
     """
     Convert a string representation of a duration to a timedelta object.
     """
-    hour = int(value[:2])
-    min = int(value[3:4])
-    sec = int(value[6:])
-    return timedelta( hours=hour, minutes=min, seconds=sec,)
+    splited = value.split(":")
+    args_dict = {}
+
+    if len(splited) == 4:
+        args_dict["days"] =  int(splited[0])
+    
+    args_dict["days"] = 0
+    args_dict["hours"] =  int(splited[1])
+    args_dict["minutes"] =  int(splited[2])
+    args_dict["seconds"] =  float(splited[3])
+    
+
+    
+    return datetime.timedelta(**args_dict)
 
 def add_left_zero(string):
     print(string[:2])
