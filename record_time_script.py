@@ -1,4 +1,4 @@
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import json
 import os
 import datetime 
@@ -6,7 +6,7 @@ import psutil
 
 def str2time(string_):
     return datetime.strptime(string_, "%H:%M:%S")
-
+ 
 def is_shutdown() -> bool:
     '''
     Verify if it`s second time the script is executed 
@@ -35,45 +35,68 @@ def calc_time_spent() -> timedelta:
 
     return uptime
         
-def string_to_timedelta(value):
+def string_to_timedelta(value) -> timedelta:  
     """
     Convert a string representation of a duration to a timedelta object.
     """
     splited = value.split(":")
+    splited = [item.split(",") for item in splited]
+    splited = [elem for sublist in splited for elem in sublist]
     args_dict = {}
-
+    #splited[0] = splited[0][:1]
     if len(splited) == 4:
-        args_dict["days"] =  int(splited[0])
-    
-    args_dict["days"] = 0
+        args_dict["days"] =  int(splited[0][0])
+    else:
+        args_dict["days"] = 0
     args_dict["hours"] =  int(splited[1])
     args_dict["minutes"] =  int(splited[2])
-    args_dict["seconds"] =  float(splited[3])
-    
-
+    args_dict["seconds"] =  int(splited[3])
     
     return datetime.timedelta(**args_dict)
 
-def add_left_zero(string):
+def time_spent_to_string(up_time):
+    # handles any format of spent to the default days, hour?min?sec
+
+    # handle if there is days, hours, min and sec
+    
+    splited = str(up_time).split(":")
+    splited_len = len(splited)
+    splited = [item.split(",") for item in splited]
+    splited = [elem for sublist in splited for elem in sublist]
+    splited = [elem.replace(" day", "") for elem in splited]
+    
+    splited = [int(float(elem)) for elem in splited]
+
+    
+    
+    while len(splited) < 4: 
+        splited.insert(0,0)
+
+
+    return "{} day, {}:{}:{}".format(*splited)
+
+def add_left_zero(string) -> str:
     print(string[:2])
     if ":" in string[:2]:
         return  "0" + string
     return string
 
-def save_acmltd_time(time_spent):
+def save_acmltd_time(time_spent) -> None:
     # update the current total time spent
 
     if os.path.exists('total_time_spent.json'):
 
         with open("total_time_spent.json", "r") as file:
             crt_total_str = json.load(file)
+            
             current_total = string_to_timedelta(crt_total_str) 
-            current_total += time_spent
+            time_spent_str = string_to_timedelta(time_spent)
+            current_total += time_spent_str
         
         with open("total_time_spent.json", "w") as file:
-            str_time_total = str(current_total)
+            str_time_total = time_spent_to_string(current_total)
             # make sure that hour find has left zero
-            str_time_total = add_left_zero(str_time_total)
+            #str_time_total = add_left_zero(str_time_total)
 
             json.dump(str_time_total, file, indent=4)
 
@@ -81,11 +104,10 @@ def save_acmltd_time(time_spent):
         print("boot event")
         with open("total_time_spent.json", "w") as file:
             str_time_spent = str(time_spent)
-            json.dump("0:" + str_time_spent, file)
+            json.dump(str_time_spent, file)
     
 
 def start():
     time_spent = calc_time_spent()
-    save_acmltd_time(time_spent)
+    save_acmltd_time(time_spent_to_string(time_spent))
 
-start()
