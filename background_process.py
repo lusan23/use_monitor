@@ -2,15 +2,22 @@ import win32api
 import win32con
 import win32gui
 import record_time_script as rts
-
+import datetime
 
 def wnd_proc(hwnd, msg, wparam, lparam):
-    print("windows message:"+str(msg))
+    # Get current date and time
+    current_datetime = datetime.datetime.now()
+
+    # Format date and time as string
+    datetime_str = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    print(f"windows message:{str(msg)}, {datetime_str}")
+    
     if msg == 800:
     #if msg == win32con.WM_QUERYENDSESSION:
         # HANDLE THE SHUTDOWN REQUEST HERE
         rts.start()
         return True # return true to allow shutdown, false to deny it
+    
     elif msg == win32con.WM_ENDSESSION:
         # Clean up if needed
         if wparam: #wparam is true if session is ending
@@ -28,11 +35,7 @@ def create_window():
     class_atom = win32gui.RegisterClass(wc)
     hwnd = win32gui.CreateWindow(class_atom, "ShutdownHandlerWindow", 0, 0, 0, 0, 0, 0, 0, wc.hInstance, None)
     return hwnd
-'''
-while True:
-    print("Waiting for shutdown event...")
-    sleep(1)
-'''
+
 def main():
     hwnd = create_window()
     print(f"window created with hwnd: {hwnd}") 
