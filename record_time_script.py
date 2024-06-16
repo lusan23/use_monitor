@@ -83,17 +83,20 @@ def add_left_zero(string) -> str:
 
 def save_acmltd_time(time_spent) -> None:
     # update the current total time spent
+    # make sure that the file is created on the  script folder, not the shortcut
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    json_file_path = os.path.join(current_dir, 'total_time_spent.json')
 
-    if os.path.exists('total_time_spent.json'):
+    if os.path.exists(json_file_path):
 
-        with open("total_time_spent.json", "r") as file:
+        with open(json_file_path, "r") as file:
             crt_total_str = json.load(file)
             
             current_total = string_to_timedelta(crt_total_str) 
             time_spent_str = string_to_timedelta(time_spent)
             current_total += time_spent_str
         
-        with open("total_time_spent.json", "w") as file:
+        with open(json_file_path, "w") as file:
             str_time_total = time_spent_to_string(current_total)
             # make sure that hour find has left zero
             #str_time_total = add_left_zero(str_time_total)
@@ -102,12 +105,31 @@ def save_acmltd_time(time_spent) -> None:
 
     else:
         print("boot event")
-        with open("total_time_spent.json", "w") as file:
+        with open(json_file_path, "w") as file:
             str_time_spent = str(time_spent)
             json.dump(str_time_spent, file)
     
 
 def start():
     time_spent = calc_time_spent()
-    save_acmltd_time(time_spent_to_string(time_spent))
 
+    try:
+
+        save_acmltd_time(time_spent_to_string(time_spent))
+    
+    except Exception as e:
+
+        folder_name = "logs"
+        # Get current date and time
+        current_datetime = datetime.now()
+
+        # Format date and time as string
+        datetime_str = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        file_name=datetime_str + ".txt"
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+
+            # Create or open the text file in write mode
+            file_path = os.path.join(folder_name, file_name)
+            with open(file_path, 'w') as file:
+                file.write(e)
