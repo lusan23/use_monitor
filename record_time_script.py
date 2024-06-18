@@ -110,24 +110,36 @@ def save_acmltd_time(time_spent) -> None:
 
         with open(json_file_path, "r") as file:
             crt_total_str = json.load(file)
-            
+            if crt_total_str == None:
+                raise Exception("File empty!!!")
             current_total = string_to_timedelta(crt_total_str) 
             time_spent_str = string_to_timedelta(time_spent)
             current_total += time_spent_str
         
         with open(json_file_path, "w") as file:
-            str_time_total = time_spent_to_string(current_total)
-            # make sure that hour find has left zero
-            #str_time_total = add_left_zero(str_time_total)
+            str_time_total = time_spent_to_string(current_total, include_date=True)
 
             json.dump(str_time_total, file, indent=4)
 
     else:
         print("boot event")
         with open(json_file_path, "w") as file:
-            str_time_spent = str(time_spent)
+            str_time_spent = time_spent_to_string(time_spent, include_date=True)
             json.dump(str_time_spent, file)
     
+def load_total_time() -> str:
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    json_file_path = os.path.join(current_dir, 'total_time_spent.json')
+    try:
+        if os.path.exists(json_file_path):
+
+            with open(json_file_path, "r") as file:
+                crt_total_str = json.load(file)
+                
+                return crt_total_str
+    except Exception as e:
+        print(e)
+            
 
 def start():
     time_spent = calc_time_spent()
