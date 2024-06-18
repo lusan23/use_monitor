@@ -35,26 +35,37 @@ def calc_time_spent() -> timedelta:
 
     return uptime
         
+def get_current_time() -> datetime:
+    """
+    Get the current time and convert it to string
+
+    """
+
 def string_to_timedelta(value) -> timedelta:  
     """
-    Convert a string representation of a duration to a timedelta object.
+    Convert a string into a timedelta object.
     """
     splited = value.split(":")
     splited = [item.split(",") for item in splited]
     splited = [elem for sublist in splited for elem in sublist]
+
+
+    splited = splited[:4] 
     args_dict = {}
-    #splited[0] = splited[0][:1]
+    print(splited)
+
     if len(splited) == 4:
         args_dict["days"] =  int(splited[0][0])
     else:
         args_dict["days"] = 0
+
     args_dict["hours"] =  int(splited[1])
     args_dict["minutes"] =  int(splited[2])
     args_dict["seconds"] =  int(splited[3])
     
     return datetime.timedelta(**args_dict)
 
-def time_spent_to_string(up_time):
+def time_spent_to_string(up_time, include_date=False, ):
     # handles any format of spent to the default days, hour?min?sec
 
     # handle if there is days, hours, min and sec
@@ -66,14 +77,22 @@ def time_spent_to_string(up_time):
     splited = [elem.replace(" day", "") for elem in splited]
     
     splited = [int(float(elem)) for elem in splited]
-
-    
+    if include_date:
+        current_time = datetime.datetime.now()
+        current_time_str = f"{current_time.year}-{current_time.month}-{current_time.day} {current_time.strftime("%H:%M:%S")}"
+        splited.append(current_time_str)
+        
+        while len(splited) < 5: 
+            splited.insert(0,0)
+        result = "{} day, {}:{}:{}, {}".format(*splited)
+        return result    
     
     while len(splited) < 4: 
+
         splited.insert(0,0)
 
-
-    return "{} day, {}:{}:{}".format(*splited)
+    return "{} day, {}:{}:{}".format(*splited)    
+    
 
 def add_left_zero(string) -> str:
     print(string[:2])
@@ -121,15 +140,17 @@ def start():
 
         folder_name = "logs"
         # Get current date and time
-        current_datetime = datetime.now()
+        current_datetime = datetime.datetime.now()
 
         # Format date and time as string
-        datetime_str = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        datetime_str = current_datetime.strftime("%Y-%m-%d")
         file_name=datetime_str + ".txt"
         if not os.path.exists(folder_name):
             os.makedirs(folder_name)
 
             # Create or open the text file in write mode
             file_path = os.path.join(folder_name, file_name)
+
             with open(file_path, 'w') as file:
                 file.write(e)
+
