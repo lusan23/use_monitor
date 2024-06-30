@@ -14,9 +14,12 @@ class MainWindow(QMainWindow):
         self.setFixedSize(400, 300)
 
         total_spent_time = load_total_time()
-        total_spent_time_deltatime = total_spent_time[:14]
-        total_last_update_date = total_spent_time[15:]
-
+        if not total_spent_time == None:
+            total_spent_time_deltatime = total_spent_time[:14]
+            total_last_update_date = total_spent_time[15:]
+        else:
+            total_spent_time_deltatime = "None"
+            total_last_update_date = "None"
         layout = QVBoxLayout()
 
         # TOTAL TIME SPENT LABEL
@@ -48,19 +51,13 @@ class MainWindow(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
-        
-
-       
 
         timer = QTimer(self)
         timer.timeout.connect(self.update_labels)
         timer.start(1000)
-       
         
-    
 
     def update_labels(self):
-
 
         # UPDATE CURRENT SESSION TIME
         spent_time = calc_time_spent()
@@ -69,7 +66,6 @@ class MainWindow(QMainWindow):
         self.current_session_time_spent.setText(f"CURRENT SESSION: {spent_time}")
 
 app = QApplication(sys.argv)
-
 
 window = MainWindow()
 
