@@ -4,6 +4,7 @@ import os
 import datetime 
 import psutil
 
+
 def str2time(string_):
     return datetime.strptime(string_, "%H:%M:%S")
  
@@ -77,6 +78,7 @@ def time_spent_to_string(up_time, include_date=False, ):
     splited = [elem.replace(" day", "") for elem in splited]
     
     splited = [int(float(elem)) for elem in splited]
+    
     if include_date:
         current_time = datetime.datetime.now()
         current_time_str = f"{current_time.year}-{current_time.month}-{current_time.day} {current_time.strftime("%H:%M:%S")}"
@@ -139,15 +141,12 @@ def load_total_time() -> str:
                 return crt_total_str
     except Exception as e:
         print(e)
-            
 
 def start():
     time_spent = calc_time_spent()
 
     try:
-
         save_acmltd_time(time_spent_to_string(time_spent))
-    
     except Exception as e:
 
         folder_name = "logs"
@@ -165,4 +164,4 @@ def start():
 
             with open(file_path, 'w') as file:
                 file.write(e)
-
+start()
