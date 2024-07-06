@@ -2,23 +2,38 @@ from datetime import datetime, timedelta
 import json
 import os
 import datetime 
+from itertools import pairwise
+from record_time_script import time_spent_to_string,get_session_boot_time
+from record_time_script import get_time_boot_or_timespent,calc_time_spent, string_to_timedelta
+import subprocess
 
-from record_time_script import string_to_timedelta
-def create_files(directory_path="time_sessions_history", filename="time_spent_session_history.json") -> None:
+
+def create_files(directory_path="time_sessions_history", 
+                 filename="time_spent_session_history.json") -> None:
     '''
     Creates the files structure to the sessions history
     '''
-    
+    WRITE_DIR_PERM = 0o755 
+    print(f"{create_files.__name__} executed!!!")
     if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
+        try:
+            print("Current working directory before change: ", os.getcwd())
+
+            # Change the current working directory
+            #s.chdir('/path/to/directory')
+
+            # Print the current working directory after the change
+            #print("Current working directory after change: ", os.getcwd())
+            os.makedirs(directory_path,mode=WRITE_DIR_PERM)
+            # create respective file session
         
-        # create respective file session
-       
-        if not os.path.exists("time_spent_session_history.json"):
-            with open(f"{directory_path}/{filename}", "w") as file:
-                json.dump({"today_sessions":[], 
-                           "last_seven_days_sessions":[],
-                           "last_thirty_days_sessions":[]}, file, indent=8)
+            if not os.path.exists("time_spent_session_history.json"):
+                with open(f"{directory_path}/{filename}", "w") as file:
+                    json.dump({"today_sessions":[], 
+                            "last_seven_days_sessions":[],
+                            "last_thirty_days_sessions":[]}, file, indent=8)
+        except Exception as e:
+             print(str(e))   
         else:
             print(f"{filename} exist!!!")
     else:
@@ -30,7 +45,7 @@ def stack_time_session(current_session_time, dir_name="time_sessions_history",
     '''
     update the history of time spent
     '''
-
+    print(f"{stack_time_session.__name__} executed!!!")
     current_time = datetime.datetime.now()
     today_date = current_time.strftime("%Y-%m-%d")
 
