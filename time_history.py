@@ -166,14 +166,40 @@ def update_sessions_history(directory_path="time_sessions_history",
                     
                     json.dump(history_dict, updated_file, indent=8)
 
-def save_today_time_sessions(time_spent: str) -> None:
-    '''
-    Add the given time to the the today key
+def save_session(time_spent: str, history_key="today_sessions",
+                directory_path="time_sessions_history", 
+                filename="time_spent_session_history.json") -> None:
     '''
 
-def save_week_time_sessions():
+    Add the given time to the the given history subset
+    @time_unity: today_sessions, last_seven_days_sessions
+
     '''
-    Add the given time to the the week key
+    print(f"{save_session.__name__} executed!!!")
+    file_path = f"{directory_path}/{filename}"
+    
+    if os.path.exists(file_path):
+        try:
+                
+            with open(file_path, 'r') as file:
+
+                history_dict: dict = json.load(file)
+                time_spent_str = time_spent_to_string(time_spent, include_date=True)
+
+                # add boot time for duplicates verification
+                boot_time: datetime = get_session_boot_time()
+                time_spent_str += f", BOOT_TIME:{str(boot_time)}"
+
+                history_dict[history_key].insert(0, time_spent_str) 
+
+                
+
+                with open(file_path, 'w') as updated_file:
+                    json.dump(history_dict, updated_file, indent=4)       
+
+        except Exception as e:
+             print(str(e))
+
     '''
 
 def save_month_time_sessions():
