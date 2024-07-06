@@ -321,3 +321,64 @@ def calc_total_time():
 
     return total_sum
 
+def verify_duplicates(history_key="today_sessions",
+                    directory_path="time_sessions_history", 
+                    filename="time_spent_session_history.json"):
+    """
+    delete session duplicates that were recorded in the session (by checking their boot time)
+    
+
+    """
+    file_path: str = f"{directory_path}/{filename}"
+
+    print(f"{calc_total_time.__name__} executed!!!")
+
+    if os.path.exists(file_path):
+        acum = 0
+        # load the given history list
+        with open(file_path, 'r') as file:
+
+            history_dict = json.load(file)
+            choosen_hist_list = history_dict[history_key]
+            print(f"INPUT:{len(history_dict[history_key])}")
+            duplicated_sessions = []
+            if len(choosen_hist_list) >= 2:
+
+                for current_sess, scssr_sess in pairwise(history_dict[history_key]):
+                    acum+=1
+                    # check the boot time
+                    dt_curr_sess = get_time_boot_or_timespent(current_sess)
+                    dt_scssr_sess = get_time_boot_or_timespent(scssr_sess)
+
+                    if dt_curr_sess == dt_scssr_sess:
+                         duplicated_sessions.append(current_sess)
+
+                    # print(f"curr:{dt_curr_sess}\nscssr:{dt_scssr_sess}")
+
+                # print(f"CHECK:{duplicated_sessions is choosen_hist_list}")
+                # print(f"DUPLICATED SESSIONS:{duplicated_sessions}")
+
+                
+                for duplicated in duplicated_sessions:
+                    history_dict[history_key].remove(duplicated)
+
+                
+                #print(f"OUTPUT:{len(history_dict[history_key])}"
+                
+                with open(file_path, 'w') as updated_file:
+                    json.dump(history_dict, updated_file, indent=4)  
+            else:
+                 print("the given list has only one item, no need to verify it.")    
+    else:
+         raise Exception(f"{file_path} does not exist") 
+
+
+def start():
+     print(f"{start.__name__} executed!!!")
+
+     create_files()
+     update_sessions_history()
+     time_spent: timedelta = calc_time_spent()
+     save_session(time_spent)
+     
+     verify_duplicates()
