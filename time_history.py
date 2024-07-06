@@ -3,8 +3,8 @@ import json
 import os
 import datetime 
 from itertools import pairwise
-from record_time_script import time_spent_to_string,get_session_boot_time
-from record_time_script import get_time_boot_or_timespent,calc_time_spent, string_to_timedelta
+from time_session_utility import time_spent_to_string,get_session_boot_time
+from time_session_utility import get_time_boot_or_timespent,calc_time_spent, string_to_timedelta
 import subprocess
 
 
@@ -200,9 +200,124 @@ def save_session(time_spent: str, history_key="today_sessions",
         except Exception as e:
              print(str(e))
 
+def calc_session_total_time(return_as_string=False,
+                            history_key="today_sessions",
+                            directory_path="time_sessions_history", 
+                            filename="time_spent_session_history.json"):
     '''
+    Calculates the sum of delta time of all items in a list.
 
-def save_month_time_sessions():
+    Obs.:This function is suppouse to be executed after the sessions rearrange
     '''
-    Add the given time to the the week key
-    '''
+    print(f"{calc_session_total_time.__name__} executed!!!")
+
+    
+    file_path = f"{directory_path}/{filename}"
+
+    total_session_time = {
+         "days": 0,
+         "hours":0,
+         "minutes":0,
+         "seconds":0
+    }
+    # open the file
+    with open(file_path, "r") as file:
+         dict_hist = json.load(file)
+         
+         for item in dict_hist[history_key]:
+            # convert all to deltatime
+            delta_item = string_to_timedelta(item)
+
+            # Accumulate timedelta values into total_session_time
+            total_session_time["days"] += delta_item.days
+            total_session_time["hours"] += delta_item.seconds // 3600
+            total_session_time["minutes"] += (delta_item.seconds % 3600) // 60
+            total_session_time["seconds"] += delta_item.seconds % 60
+
+    # sum and return 
+    if return_as_string:
+         return time_spent_to_string(datetime.timedelta(days=total_session_time["days"],
+                                   hours=total_session_time["hours"],
+                                   minutes=total_session_time["minutes"],
+                                   seconds=total_session_time["seconds"]), include_date=True)
+    return total_session_time
+
+def calc_last_seven_days_total(return_as_string=False):
+     """
+     Use calc_session_total_time to get the last seven days total time spent
+     """
+     today = calc_session_total_time()
+     this_week = calc_session_total_time(history_key="last_seven_days_sessions")
+     result = datetime.timedelta(days=today["days"] + this_week["days"],
+                                 hours=today["hours"] + this_week["hours"],
+                                 minutes=today["minutes"] + this_week["minutes"],
+                                 seconds=today["seconds"] + this_week["seconds"],
+                                 
+                                 )
+     if return_as_string:
+          return time_spent_to_string(result)
+     return result
+
+def calc_last_thirty_days_total(return_as_string=False):
+     """
+     Use calc_session_total_time to get the last thirty days total time spent
+     """
+     this_week = calc_last_seven_days_total()
+     this_month = calc_session_total_time(history_key="last_seven_days_sessions")
+     result = datetime.timedelta(days=this_week.days + this_month["days"],
+                                 hours=this_week.seconds // 3600 + this_month["hours"],
+                                 minutes=(this_week.seconds % 3600) // 60 + this_month["minutes"],
+                                 seconds=this_week.seconds % 60 + this_month["seconds"],
+                                 )
+     if return_as_string:
+          return time_spent_to_string(result)
+     return result
+
+def get_time_from_sessions_total(time_string):
+    """
+    Splits and extract the time from a datetime object return by 'calc_session_total_time'
+     
+    """
+    tmp = time_string.split(",")
+    print(f"check:{tmp}")
+    return ",".join(tmp[:2])
+
+def calc_total_time():
+    """
+    calculate the sum of all sessions 
+    """
+    print(f"{calc_total_time.__name__} executed!!!")
+
+    dict_keys = ["today_sessions", "last_seven_days_sessions", 
+                 "last_thirty_days_sessions"]
+    
+    total_sum =  {
+         "days":0,
+         "hours":0,
+         "minutes":0,
+         "seconds":0
+    }
+
+    for key in dict_keys:
+        curr_semitotal: dict = calc_session_total_time(history_key=key)
+
+        total_sum["days"] += curr_semitotal["days"]
+        total_sum["hours"] += curr_semitotal["hours"]
+        total_sum["minutes"] += curr_semitotal["minutes"]
+        total_sum["seconds"] += curr_semitotal["seconds"]
+
+    # balance time
+    remaining_time = int(total_sum["seconds"] / 60)
+    total_sum["seconds"] = int(total_sum["seconds"] % 60)
+    total_sum["minutes"] += int(remaining_time)
+
+    remaining_time = int(total_sum["minutes"] / 60,) 
+    total_sum["minutes"] = int(total_sum["minutes"] % 60)
+    total_sum["hours"] += remaining_time
+
+    remaining_time = int(total_sum["hours"] / 24)
+    total_sum["minutes"] = int(total_sum["hours"] % 24)
+    total_sum["hours"] += remaining_time
+
+    return total_sum
+
