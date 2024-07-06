@@ -72,13 +72,14 @@ def update_sessions_history(directory_path="time_sessions_history",
     @today_date - a temporary parameter for testing purposes
 
     """
-   
+    print(f"{update_sessions_history.__name__} executed!!!")
+
     # does the today_sessions list has any item out of date?
     with open(f"{directory_path}/{filename}") as file:
         history_dict = json.load(file)
         today_date = datetime.datetime.now()
-        today_date.date()
-
+        # clean repeated sessions
+        history_dict["today_sessions"] = list(set(history_dict["today_sessions"]))
         deleted_sessions_today = []
         for session in history_dict["today_sessions"]:
             
@@ -96,20 +97,74 @@ def update_sessions_history(directory_path="time_sessions_history",
             deltatime_item_now = today_date.date() - session_date
             print(f"deltatime_item_now:{deltatime_item_now.days}")
             # if it does, move those items to the week list     
-            if today_date.day != 0:
+            if deltatime_item_now.days != 0:
                 temp = session
                 deleted_sessions_today.append(temp)
                 history_dict["last_seven_days_sessions"].insert(0, temp)
+        
         # cleaning up the today key
         for deleted_session in deleted_sessions_today:
             history_dict["today_sessions"].remove(deleted_session)
 
-        with open(f"{directory_path}/{filename}", "w") as updated_file:
-            json.dump(history_dict, updated_file, indent=8)
-    # does the week_sessions list has any item has a deltatime == today_date - item_date > 7?
-        # if it does, move those items to the month list
+    # does the delete_sessions list has any item  deltatime == today_date - item_date  > 7?
+        # if it does, delete those items
+        deleted_sessions_week = []
+        for session in history_dict["last_seven_days_sessions"]:
+                    
+                    splitted = session.split(",")
+                    splitted = splitted[2].split(" ")
+                    splitted = splitted[1]
+                    
+                    splitted = splitted.split("-")
+                    splitted = [int(item) for item in splitted]
+                
+                    session_date = datetime.date(year=splitted[0], 
+                                                month=splitted[1],
+                                                day=splitted[2])
+                    
+                    deltatime_item_now = today_date.date() - session_date
+                    print(f"deltatime_item_now:{deltatime_item_now.days}")
+        
+                    # if it does, move those items to the week list     
+                    if deltatime_item_now.days > 7:
+                        temp = session
+                        deleted_sessions_week.append(temp)
+                        history_dict["last_thirty_days_sessions"].insert(0, temp)
+                    # cleaning up the today key
+        
+        for deleted_session in deleted_sessions_week:
+            history_dict["last_seven_days_sessions"].remove(deleted_session)
+
     # does the delete_sessions list has any item  deltatime == today_date - item_date > 30?
         # if it does, delete those items
+        deleted_sessions_month = []
+        for session in history_dict["last_thirty_days_sessions"]:
+                    
+                    splitted = session.split(",")
+                    splitted = splitted[2].split(" ")
+                    splitted = splitted[1]
+                    
+                    splitted = splitted.split("-")
+                    splitted = [int(item) for item in splitted]
+                
+                    session_date = datetime.date(year=splitted[0], 
+                                                month=splitted[1],
+                                                day=splitted[2])
+                    
+                    deltatime_item_now = today_date.date() - session_date
+                    print(f"deltatime_item_now:{deltatime_item_now.days}")
+        
+                    # if it does, delete them     
+                    if deltatime_item_now.days > 30:
+                        deleted_sessions_month.append(session)
+                        
+                    # cleaning up the today key
+        for deleted_session in deleted_sessions_month:
+            history_dict["last_thirty_days_sessions"].remove(deleted_session)
+        
+        with open(f"{directory_path}/{filename}", "w") as updated_file:
+                    
+                    json.dump(history_dict, updated_file, indent=8)
 
 def save_today_time_sessions(time_spent: str) -> None:
     '''
