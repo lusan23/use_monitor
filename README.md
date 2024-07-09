@@ -1,10 +1,11 @@
-## Requirements
+## How to set it up
+
 Fast Startup must be unable
 ``python disable_fast_startup.py ``
+
 Configure Shutdown options to allow top level apps hold shutdown event
 ``python config_execute_at_shutdown_perm.py``
-Configure startup 
-``.\config_startup.bat``
+
 
 ## python required packages:
 PyQt6
