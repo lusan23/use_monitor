@@ -125,49 +125,21 @@ def update_sessions_history(directory_path="time_sessions_history",
             
             splitted = splitted.split("-")
             splitted = [int(item) for item in splitted]
-           
+        
             session_date = datetime.date(year=splitted[0], 
-                                         month=splitted[1],
-                                          day=splitted[2])
+                                        month=splitted[1],
+                                        day=splitted[2])
             
             deltatime_item_now = today_date.date() - session_date
             print(f"deltatime_item_now:{deltatime_item_now.days}")
-            # if it does, move those items to the week list     
-            if deltatime_item_now.days != 0:
-                temp = session
-                deleted_sessions_today.append(temp)
-                history_dict["last_seven_days_sessions"].insert(0, temp)
-        
-        # cleaning up the today key
-        for deleted_session in deleted_sessions_today:
-            history_dict["today_sessions"].remove(deleted_session)
 
-    # does the delete_sessions list has any item  deltatime == today_date - item_date  > 7?
-        # if it does, delete those items
-        deleted_sessions_week = []
-        for session in history_dict["last_seven_days_sessions"]:
-                    
-                    splitted = session.split(",")
-                    splitted = splitted[2].split(" ")
-                    splitted = splitted[1]
-                    
-                    splitted = splitted.split("-")
-                    splitted = [int(item) for item in splitted]
-                
-                    session_date = datetime.date(year=splitted[0], 
-                                                month=splitted[1],
-                                                day=splitted[2])
-                    
-                    deltatime_item_now = today_date.date() - session_date
-                    print(f"deltatime_item_now:{deltatime_item_now.days}")
-        
-                    # if it does, move those items to the week list     
-                    if deltatime_item_now.days > 7:
-                        temp = session
-                        deleted_sessions_week.append(temp)
-                        history_dict["last_thirty_days_sessions"].insert(0, temp)
-                    # cleaning up the today key
-        
+            # if it does, move those items to the week list     
+            if deltatime_item_now.days > 7:
+                temp = session
+                deleted_sessions_week.append(temp)
+                history_dict["last_thirty_days_sessions"].insert(0, temp)
+            # cleaning up the today key
+
         for deleted_session in deleted_sessions_week:
             history_dict["last_seven_days_sessions"].remove(deleted_session)
 
@@ -176,18 +148,22 @@ def update_sessions_history(directory_path="time_sessions_history",
         deleted_sessions_month = []
         for session in history_dict["last_thirty_days_sessions"]:
                     
-                    splitted = session.split(",")
-                    splitted = splitted[2].split(" ")
-                    splitted = splitted[1]
+                    splitted_comma = session.split(",")
+
+                    splitted_space = splitted_comma[2].split(" ")
+
+                    splitted_part = splitted_space[1]
                     
-                    splitted = splitted.split("-")
-                    splitted = [int(item) for item in splitted]
+                    splitted_hyphen = splitted_part.split("-")
+
+                    splitted = [int(item) for item in splitted_hyphen]
                 
                     session_date = datetime.date(year=splitted[0], 
                                                 month=splitted[1],
                                                 day=splitted[2])
                     
                     deltatime_item_now = today_date.date() - session_date
+
                     print(f"deltatime_item_now:{deltatime_item_now.days}")
         
                     # if it does, delete them     
@@ -251,7 +227,7 @@ def calc_session_total_time(return_as_string=False,
          "minutes":0,
          "seconds":0
     }
-    
+
     # open the file
     dict_hist = load_dict_hist(load_whole_dict=True)
    
