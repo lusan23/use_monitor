@@ -28,7 +28,8 @@ def get_session_boot_time():
     return dt_boot_time
 
 
-def load_dict_hist(history_key="today_sessions"):
+def load_dict_hist(history_key="today_sessions", 
+                   load_whole_dict=False):
     '''
     Load the list of sessions 
     '''
@@ -37,15 +38,16 @@ def load_dict_hist(history_key="today_sessions"):
     file_path = f"{directory_path}/{filename}"
 
     with open(file_path, "r") as file:
-         dict_hist = json.load(file)
+        dict_hist = json.load(file)
+        if load_whole_dict:
+            return dict_hist
+        return dict_hist[history_key]
 
-         return dict_hist[history_key]
-
-def write_dict_hist(updated_dict_hist: str):
+def write_dict_hist(updated_dict_hist: {list}):
     '''
     write the list of sessions 
     '''
-    directory_path="time_sessions_history",
+    directory_path="time_sessions_history"
     filename="time_spent_session_history.json"
     file_path = f"{directory_path}/{filename}"
 
