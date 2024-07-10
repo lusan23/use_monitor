@@ -6,11 +6,12 @@ from itertools import pairwise
 from time_session_utility import time_spent_to_string,get_session_boot_time
 from time_session_utility import get_time_boot_or_timespent,calc_time_spent, string_to_timedelta
 from time_session_utility import load_dict_hist, write_dict_hist
-import subprocess
 
+DIR_PATH = "time_sessions_history"
+FILENAME = "time_spent_session_history.json"
 
-def create_files(directory_path="time_sessions_history", 
-                 filename="time_spent_session_history.json") -> None:
+def create_files(directory_path=DIR_PATH, 
+                 filename=FILENAME) -> None:
     '''
     Creates the files structure to the sessions history
     '''
@@ -19,9 +20,6 @@ def create_files(directory_path="time_sessions_history",
     if not os.path.exists(directory_path):
         try:
             print("Current working directory before change: ", os.getcwd())
-
-            # Change the current working directory
-            #s.chdir('/path/to/directory')
 
             # Print the current working directory after the change
             #print("Current working directory after change: ", os.getcwd())
@@ -48,31 +46,8 @@ def create_files(directory_path="time_sessions_history",
                              "last_thirty_days_sessions":[]})
         return None
 
-# def stack_time_session(current_session_time, dir_name="time_sessions_history", 
-#                        filename="time_spent_session_history.json"):
-#     '''
-#     update the history of time spent
-#     '''
-#     print(f"{stack_time_session.__name__} executed!!!")
-#     current_time = datetime.datetime.now()
-#     today_date = current_time.strftime("%Y-%m-%d")
-
-#     # add todays time
-#     loaded_history_dict = load_dict_hist(load_whole_dict=True)
-
-#     try:
-#         loaded_history_dict["today_sessions"].append(current_session_time)
-#         print(loaded_history_dict)
-        
-#         with open(f"{dir_name}/{filename}", "w") as updated_dict:
-#             json.dump(loaded_history_dict, updated_dict, indent=8)
-            
-#     except Exception as e:
-#         print(e)
-
-
-def update_sessions_history(directory_path="time_sessions_history", 
-                            filename="time_spent_session_history.json"):
+def update_sessions_history(directory_path=DIR_PATH, 
+                            filename=FILENAME):
     """
     Update the session's group based on their date
 
@@ -83,7 +58,7 @@ def update_sessions_history(directory_path="time_sessions_history",
 
     # does the today_sessions list has any item out of date?
 
-    history_dict = load_dict_hist(load_dict_hist=True)
+    history_dict = load_dict_hist(load_whole_dict=True)
     
     today_date = datetime.datetime.now()
     # clean repeated sessions
@@ -177,8 +152,8 @@ def update_sessions_history(directory_path="time_sessions_history",
         write_dict_hist(history_dict)
 
 def save_session(time_spent: str, history_key="today_sessions",
-                directory_path="time_sessions_history", 
-                filename="time_spent_session_history.json") -> None:
+                directory_path=DIR_PATH, 
+                filename=FILENAME) -> None:
     '''
 
     Add the given time to the the given history subset
@@ -209,8 +184,8 @@ def save_session(time_spent: str, history_key="today_sessions",
 
 def calc_session_total_time(return_as_string=False,
                             history_key="today_sessions",
-                            directory_path="time_sessions_history", 
-                            filename="time_spent_session_history.json"):
+                            directory_path=DIR_PATH, 
+                            filename=FILENAME):
     '''
     Calculates the sum of delta time of all items in a list.
 
@@ -232,6 +207,7 @@ def calc_session_total_time(return_as_string=False,
     dict_hist = load_dict_hist(load_whole_dict=True)
    
     for item in dict_hist[history_key]:
+
         # convert all to deltatime
         delta_item = string_to_timedelta(item)
 
@@ -280,6 +256,7 @@ def calc_last_thirty_days_total(return_as_string=False):
           return time_spent_to_string(result)
      return result
 
+
 def get_time_from_sessions_total(time_string):
     """
     Splits and extract the time from a datetime object return by 'calc_session_total_time'
@@ -287,7 +264,7 @@ def get_time_from_sessions_total(time_string):
     """
     tmp = time_string.split(",")
     print(f"check:{tmp}")
-    return ",".join(tmp[:2])
+    return ",".join(tmp[:2]).replace("day", "days")
 
 def calc_total_time():
     """
@@ -329,8 +306,8 @@ def calc_total_time():
     return total_sum
 
 def verify_duplicates(history_key="today_sessions",
-                    directory_path="time_sessions_history", 
-                    filename="time_spent_session_history.json"):
+                    directory_path=DIR_PATH, 
+                    filename=FILENAME):
     """
     delete session duplicates that were recorded in the session (by checking their boot time)
     
@@ -356,20 +333,11 @@ def verify_duplicates(history_key="today_sessions",
                 dt_scssr_sess = get_time_boot_or_timespent(scssr_sess)
 
                 if dt_curr_sess == dt_scssr_sess:
-                        duplicated_sessions.append(current_sess)
-
-                # print(f"curr:{dt_curr_sess}\nscssr:{dt_scssr_sess}")
-
-            # print(f"CHECK:{duplicated_sessions is choosen_hist_list}")
-            # print(f"DUPLICATED SESSIONS:{duplicated_sessions}")
-
+                    duplicated_sessions.append(current_sess)
             
             for duplicated in duplicated_sessions:
                 history_dict[history_key].remove(duplicated)
 
-            
-            #print(f"OUTPUT:{len(history_dict[history_key])}"
-            
             write_dict_hist(history_dict)
         
         else:
