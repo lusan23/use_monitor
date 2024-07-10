@@ -1,13 +1,16 @@
 ## How to set it up
 
 ### Fast Startup must be unable
-#### It allows the boot time actually be resisted once you shut down
+#### It allows the boot time to be registered once you shut down
 ``python setup_files\disable_fast_startup.py ``
 
-### Allow script to be executed at shutdown
-#### Configure Shutdown options to allow top-level apps to hold shutdown event
-``python config_execute_at_shutdown_perm.py``
+### Create Trigger task
+``python setup_files\create_task_at_logon.py`` <br />
+it creates a task at the windows task scheduler to trigger the `back_ground_process.py` file, which does the time storage. 
 
+### Allow script to be executed at shutdown
+#### Configure Shutdown options to allow top-level scripts to hold shutdown event
+``python setup_files\config_execute_at_shutdown_perm.py``
 
 ## python required packages:
 PyQt6 (GUI lib) <br />
