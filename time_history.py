@@ -7,26 +7,30 @@ from time_session_utility import time_spent_to_string,get_session_boot_time
 from time_session_utility import get_time_boot_or_timespent,calc_time_spent, string_to_timedelta
 from time_session_utility import load_dict_hist, write_dict_hist
 
-DIR_PATH = "time_sessions_history"
+DIR_NAME = "time_sessions_history"
 FILENAME = "time_spent_session_history.json"
 
-def create_files(directory_path=DIR_PATH, 
-                 filename=FILENAME) -> None:
+def create_files(directory_name=DIR_NAME, 
+                 filename=DIR_NAME) -> None:
     '''
     Creates the files structure to the sessions history
     '''
-    WRITE_DIR_PERM = 0o755 
+    WRITE_DIR_PERM = 0o755
+    RELATIVE_PATH = "time_sessions_history\\time_spent_session_history.json"
+    RELATIVE_PATH_2 = f"{directory_name}\\{filename}"
+    
     print(f"{create_files.__name__} executed!!!")
-    if not os.path.exists(directory_path):
+    if not os.path.exists(directory_name):
         try:
             print("Current working directory before change: ", os.getcwd())
 
             # Print the current working directory after the change
             #print("Current working directory after change: ", os.getcwd())
-            os.makedirs(directory_path,mode=WRITE_DIR_PERM)
+            os.makedirs(directory_name,mode=WRITE_DIR_PERM)
             # create respective file session
         
-            if not os.path.exists(filename):
+            if not os.path.isfile(RELATIVE_PATH):
+                print("CURRENT DIR:", os.getcwd())
                 write_dict_hist({"today_sessions":[], 
                              "last_seven_days_sessions":[],
                              "last_thirty_days_sessions":[]})
@@ -40,13 +44,16 @@ def create_files(directory_path=DIR_PATH,
     else:
         print("The folder already exist!!!")
 
-        if not os.path.exists(filename):
-                write_dict_hist({"today_sessions":[], 
-                             "last_seven_days_sessions":[],
-                             "last_thirty_days_sessions":[]})
+        #if not os.path.isfile("time_sessions_history\\time_spent_session_history.json"):
+        if not os.path.isfile(RELATIVE_PATH):
+            print("Current working directory before change: ", os.getcwd())
+            write_dict_hist({"today_sessions":[], 
+                            "last_seven_days_sessions":[],
+                            "last_thirty_days_sessions":[]})
+            print("----THE FILE DOES NOT EXIST----")
         return None
 
-def update_sessions_history(directory_path=DIR_PATH, 
+def update_sessions_history(directory_name=DIR_NAME, 
                             filename=FILENAME):
     """
     Update the session's group based on their date
@@ -152,7 +159,7 @@ def update_sessions_history(directory_path=DIR_PATH,
         write_dict_hist(history_dict)
 
 def save_session(time_spent: str, history_key="today_sessions",
-                directory_path=DIR_PATH, 
+                directory_name=DIR_NAME, 
                 filename=FILENAME) -> None:
     '''
 
@@ -161,7 +168,7 @@ def save_session(time_spent: str, history_key="today_sessions",
 
     '''
     print(f"{save_session.__name__} executed!!!")
-    file_path = f"{directory_path}/{filename}"
+    file_path = f"{directory_name}/{filename}"
     
     if os.path.exists(file_path):
         try:
@@ -184,7 +191,7 @@ def save_session(time_spent: str, history_key="today_sessions",
 
 def calc_session_total_time(return_as_string=False,
                             history_key="today_sessions",
-                            directory_path=DIR_PATH, 
+                            directory_name=DIR_NAME, 
                             filename=FILENAME):
     '''
     Calculates the sum of delta time of all items in a list.
@@ -194,7 +201,7 @@ def calc_session_total_time(return_as_string=False,
     print(f"{calc_session_total_time.__name__} executed!!!")
 
     
-    file_path = f"{directory_path}/{filename}"
+    file_path = f"{directory_name}/{filename}"
 
     total_session_time = {
          "days": 0,
@@ -306,14 +313,14 @@ def calc_total_time():
     return total_sum
 
 def verify_duplicates(history_key="today_sessions",
-                    directory_path=DIR_PATH, 
+                    directory_name=DIR_NAME, 
                     filename=FILENAME):
     """
     delete session duplicates that were recorded in the session (by checking their boot time)
     
 
     """
-    file_path: str = f"{directory_path}/{filename}"
+    file_path: str = f"{directory_name}/{filename}"
     print("")
     print(f"{calc_total_time.__name__} executed!!!")
 
