@@ -8,7 +8,8 @@ from time_history import start, update_sessions_history
 rts_called = False
 
 def wnd_proc(hwnd, msg, wparam, lparam):
-    message_map = [win32con.WM_QUERYENDSESSION, win32con.WM_ENDSESSION]
+    message_map = [win32con.WM_QUERYENDSESSION, 
+                   win32con.WM_ENDSESSION]
 
     # Get current date and time
     current_datetime = datetime.datetime.now()
@@ -19,7 +20,7 @@ def wnd_proc(hwnd, msg, wparam, lparam):
     print(f"rts_called:{rts_called}")
  
 
-    if msg in message_map or msg == 799:
+    if msg in message_map or msg == 800:
         # Handle the shutdown request here
         try:
             start()
