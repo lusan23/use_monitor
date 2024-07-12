@@ -340,7 +340,7 @@ def verify_duplicates(history_key="today_sessions",
                 dt_scssr_sess = get_time_boot_or_timespent(scssr_sess)
 
                 if dt_curr_sess == dt_scssr_sess:
-                    duplicated_sessions.append(current_sess)
+                    duplicated_sessions.append(scssr_sess)
             
             for duplicated in duplicated_sessions:
                 history_dict[history_key].remove(duplicated)
