@@ -15,7 +15,7 @@ task_ref = scheduler.NewTask(0)
 # CREATE ACTION
 action = task_ref.Actions.Create(TASK_ACTION_EXEC)
 action.ID = "TRIGGER RECORD SESSION"
-action.Path = f"{os.getcwd()}\\call_bg_prc.bat"
+action.Path = f"{os.getcwd()}\\call_main.bat"
 
 # Set Settings
 task_ref.RegistrationInfo.Description = "Use Monitor shutdown script"

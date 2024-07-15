@@ -1,12 +1,13 @@
 from pystray import MenuItem as item
 import pystray
 from PIL import Image
-from subprocess import run
+from subprocess import run, Popen
 from os import getppid, kill
 from signal import SIGTERM
 from psutil import Process
+
 def open_gui():
-    run(["python", "app_gui.py"], shell=True)
+    Popen(["python", "app_gui.py"], shell=True)
 
 def end_session(icon, item):
     try:

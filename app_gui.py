@@ -118,10 +118,13 @@ class MainWindow(QMainWindow):
         
         self.current_session_time_spent.setText(f"CURRENT SESSION:\n{spent_time.replace("day", "days")}")
 
-app = QApplication(sys.argv)
+def start():
+    app = QApplication(sys.argv)
 
-window = MainWindow()
+    window = MainWindow()
 
-window.show()
+    window.show()
 
-app.exec()
+    app.exec()
+
+start()

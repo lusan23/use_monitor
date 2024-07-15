@@ -2,10 +2,12 @@ import win32api
 import win32con
 import win32gui
 import time_session_utility as rts
+from time_history import create_files
 import datetime
 from time_history import start, update_sessions_history
-
+from subprocess import Popen, run
 rts_called = False
+
 
 def wnd_proc(hwnd, msg, wparam, lparam):
     message_map = [win32con.WM_QUERYENDSESSION, 
@@ -47,8 +49,12 @@ def main():
     print(f"Window created with hwnd: {hwnd}") 
     win32gui.PumpMessages()
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+def start():    
+    create_files()
     update_sessions_history()
     print("-"*20)
     main()
-  
+start()    
+#Popen(["python", "stray_sys.py"], shell=False)
+    
