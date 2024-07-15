@@ -253,7 +253,7 @@ def calc_last_thirty_days_total(return_as_string=False):
      Use calc_session_total_time to get the last thirty days total time spent
      """
      this_week = calc_last_seven_days_total()
-     this_month = calc_session_total_time(history_key="last_seven_days_sessions")
+     this_month = calc_session_total_time(history_key="last_thirty_days_sessions")
      result = datetime.timedelta(days=this_week.days + this_month["days"],
                                  hours=this_week.seconds // 3600 + this_month["hours"],
                                  minutes=(this_week.seconds % 3600) // 60 + this_month["minutes"],

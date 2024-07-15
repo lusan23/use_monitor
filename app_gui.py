@@ -14,7 +14,6 @@ class MainWindow(QMainWindow):
 
         super(MainWindow, self).__init__()
         
-   
         total_spent_time = calc_total_time()
 
         if not total_spent_time == None:
@@ -117,7 +116,7 @@ class MainWindow(QMainWindow):
         spent_time = calc_time_spent()
         spent_time = time_spent_to_string(spent_time)
         
-        self.current_session_time_spent.setText(f"CURRENT SESSION:\n{spent_time}")
+        self.current_session_time_spent.setText(f"CURRENT SESSION:\n{spent_time.replace("day", "days")}")
 
 app = QApplication(sys.argv)
 

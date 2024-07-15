@@ -3,7 +3,7 @@ import json
 import os
 import datetime 
 import psutil
- 
+import re
 def calc_time_spent() -> timedelta:
     # calculate the time up and return it
 
@@ -77,6 +77,13 @@ def get_time_boot_or_timespent(session_info: str, get_tb=True) -> str:
         
         return session_info[0][:len(session_info[0]) - 2]
 
+
+def get_record_time(session_info: str):
+    tmp = session_info.split(",")
+    tmp_comma_splited = tmp[2]
+    tmp_space_splited = tmp_comma_splited.split(" ")
+    return tmp_space_splited[2]
+
 def string_to_timedelta(value) -> timedelta:  
     """
     Convert a string into a timedelta object.
@@ -101,6 +108,8 @@ def string_to_timedelta(value) -> timedelta:
     
     return datetime.timedelta(**args_dict)
 
+def remove_letters(string):
+    return re.sub(r"[a-z]", "", string)
 
 def time_spent_to_string(up_time, include_date=False, ):
     # handles any format of spent to the default days, hour?min?sec
@@ -112,7 +121,7 @@ def time_spent_to_string(up_time, include_date=False, ):
     splited = [item.split(",") for item in splited]
     splited = [elem for sublist in splited for elem in sublist]
     splited = [elem.replace(" day", "") for elem in splited]
-    
+    splited = [remove_letters(elem) if bool(re.match(r"\d[a-z]", elem)) else elem for elem in splited]
     splited = [int(float(elem)) for elem in splited]
     
     if include_date:

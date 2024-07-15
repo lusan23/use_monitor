@@ -3,4 +3,4 @@ echo The directory of this batch file is: %~dp0
 
 @echo off
 cd %~dp0
-python ..\background_process.py
+python background_process.py
