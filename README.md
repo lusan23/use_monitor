@@ -19,7 +19,9 @@ psutil (only used for once, so the execute at shutdown script can work.) <br />
 ``pip install psutil==5.9.8`` <br />
 pywin32 (For the time spent estimation )<br />
 ``pip install pywin32==306``
-
+pystray (For the module that creates the Hiden Icon on Windows's taskbar)
+``pip install pystray==0.19.5``
+<br/>
 after installing everything restart your Machine
 
 ## Getting started
