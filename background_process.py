@@ -4,7 +4,7 @@ import win32gui
 import time_session_utility as rts
 from time_history import create_files
 import datetime
-from time_history import start, update_sessions_history
+from time_history import start as th_start, update_sessions_history
 from subprocess import Popen, run
 rts_called = False
 
@@ -25,11 +25,14 @@ def wnd_proc(hwnd, msg, wparam, lparam):
     if msg in message_map or msg == 800:
         # Handle the shutdown request here
         try:
-            start()
+            print("SHUTDOWN DETECTED!!! saving sessions...")
+            th_start()
         except Exception as e:
             with open("./shutdown_log.txt", "a") as f:
                 f.write(str(e))
         return True  # Return True to allow shutdown, False to deny it
+    else:
+        print("BG PROCESS STILL RUNNING!!!")
     
     return win32gui.DefWindowProc(hwnd, msg, wparam, lparam)
 
@@ -55,6 +58,4 @@ def start():
     update_sessions_history()
     print("-"*20)
     main()
-start()    
-#Popen(["python", "stray_sys.py"], shell=False)
-    
+#start()    
