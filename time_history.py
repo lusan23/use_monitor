@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
-import json
-import os
-import datetime 
+from os import path, getcwd, makedirs
+from datetime import datetime, date, timedelta
 from itertools import pairwise
 from time_session_utility import time_spent_to_string,get_session_boot_time
 from time_session_utility import get_time_boot_or_timespent,calc_time_spent, string_to_timedelta
@@ -20,17 +19,17 @@ def create_files(directory_name=DIR_NAME,
     RELATIVE_PATH_2 = f"{directory_name}\\{filename}"
     
     print(f"{create_files.__name__} executed!!!")
-    if not os.path.exists(directory_name):
+    if not path.exists(directory_name):
         try:
-            print("Current working directory before change: ", os.getcwd())
+            print("Current working directory before change: ", getcwd())
 
             # Print the current working directory after the change
-            #print("Current working directory after change: ", os.getcwd())
-            os.makedirs(directory_name,mode=WRITE_DIR_PERM)
+            #print("Current working directory after change: ", getcwd())
+            makedirs(directory_name,mode=WRITE_DIR_PERM)
             # create respective file session
         
-            if not os.path.isfile(RELATIVE_PATH):
-                print("CURRENT DIR:", os.getcwd())
+            if not path.isfile(RELATIVE_PATH):
+                print("CURRENT DIR:", getcwd())
                 write_dict_hist({"today_sessions":[], 
                              "last_seven_days_sessions":[],
                              "last_thirty_days_sessions":[]})
@@ -44,9 +43,9 @@ def create_files(directory_name=DIR_NAME,
     else:
         print("The folder already exist!!!")
 
-        #if not os.path.isfile("time_sessions_history\\time_spent_session_history.json"):
-        if not os.path.isfile(RELATIVE_PATH):
-            print("Current working directory before change: ", os.getcwd())
+        #if not path.isfile("time_sessions_history\\time_spent_session_history.json"):
+        if not path.isfile(RELATIVE_PATH):
+            print("Current working directory before change: ", getcwd())
             write_dict_hist({"today_sessions":[], 
                             "last_seven_days_sessions":[],
                             "last_thirty_days_sessions":[]})
@@ -67,7 +66,7 @@ def update_sessions_history(directory_name=DIR_NAME,
 
     history_dict = load_dict_hist(load_whole_dict=True)
     
-    today_date = datetime.datetime.now()
+    today_date = datetime.now()
     # clean repeated sessions
     history_dict["today_sessions"] = list(set(history_dict["today_sessions"]))
     deleted_sessions_today = []
@@ -80,7 +79,7 @@ def update_sessions_history(directory_name=DIR_NAME,
         splitted = splitted.split("-")
         splitted = [int(item) for item in splitted]
         
-        session_date = datetime.date(year=splitted[0], 
+        session_date = date(year=splitted[0], 
                                         month=splitted[1],
                                         day=splitted[2])
         
@@ -108,7 +107,7 @@ def update_sessions_history(directory_name=DIR_NAME,
             splitted = splitted.split("-")
             splitted = [int(item) for item in splitted]
         
-            session_date = datetime.date(year=splitted[0], 
+            session_date = date(year=splitted[0], 
                                         month=splitted[1],
                                         day=splitted[2])
             
@@ -140,7 +139,7 @@ def update_sessions_history(directory_name=DIR_NAME,
 
                     splitted = [int(item) for item in splitted_hyphen]
                 
-                    session_date = datetime.date(year=splitted[0], 
+                    session_date = date(year=splitted[0], 
                                                 month=splitted[1],
                                                 day=splitted[2])
                     
@@ -170,7 +169,7 @@ def save_session(time_spent: str, history_key="today_sessions",
     print(f"{save_session.__name__} executed!!!")
     file_path = f"{directory_name}/{filename}"
     
-    if os.path.exists(file_path):
+    if path.exists(file_path):
         try:
             history_dict = load_dict_hist(load_whole_dict=True)
         
@@ -226,7 +225,7 @@ def calc_session_total_time(return_as_string=False,
 
     # sum and return 
     if return_as_string:
-         return time_spent_to_string(datetime.timedelta(days=total_session_time["days"],
+         return time_spent_to_string(timedelta(days=total_session_time["days"],
                                    hours=total_session_time["hours"],
                                    minutes=total_session_time["minutes"],
                                    seconds=total_session_time["seconds"]), include_date=True)
@@ -238,7 +237,7 @@ def calc_last_seven_days_total(return_as_string=False):
      """
      today = calc_session_total_time()
      this_week = calc_session_total_time(history_key="last_seven_days_sessions")
-     result = datetime.timedelta(days=today["days"] + this_week["days"],
+     result = timedelta(days=today["days"] + this_week["days"],
                                  hours=today["hours"] + this_week["hours"],
                                  minutes=today["minutes"] + this_week["minutes"],
                                  seconds=today["seconds"] + this_week["seconds"],
@@ -254,7 +253,7 @@ def calc_last_thirty_days_total(return_as_string=False):
      """
      this_week = calc_last_seven_days_total()
      this_month = calc_session_total_time(history_key="last_thirty_days_sessions")
-     result = datetime.timedelta(days=this_week.days + this_month["days"],
+     result = timedelta(days=this_week.days + this_month["days"],
                                  hours=this_week.seconds // 3600 + this_month["hours"],
                                  minutes=(this_week.seconds % 3600) // 60 + this_month["minutes"],
                                  seconds=this_week.seconds % 60 + this_month["seconds"],
@@ -324,7 +323,7 @@ def verify_duplicates(history_key="today_sessions",
     print("")
     print(f"{calc_total_time.__name__} executed!!!")
 
-    if os.path.exists(file_path):
+    if path.exists(file_path):
         acum = 0
         # load the given history list
         history_dict = load_dict_hist(load_whole_dict=True)

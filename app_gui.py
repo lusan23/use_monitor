@@ -1,10 +1,12 @@
 from PyQt6.QtWidgets import (QApplication, QWidget, QMainWindow, QLabel,
-                             QVBoxLayout, QHBoxLayout, QSizePolicy )
-from PyQt6.QtGui import QPalette, QColor
+                             QVBoxLayout, QHBoxLayout )
+from PyQt6.QtGui import QPalette, QColor, QIcon
 from PyQt6.QtCore import Qt, QTimer
 from time_session_utility import calc_time_spent, time_spent_to_string
-from time_history import calc_session_total_time, calc_total_time, get_time_from_sessions_total,calc_last_seven_days_total, calc_last_thirty_days_total
-import sys
+from time_history import  (calc_session_total_time, calc_total_time,
+                            get_time_from_sessions_total, calc_last_seven_days_total,
+                            calc_last_thirty_days_total)
+from  sys import argv
 
 
 
@@ -119,12 +121,11 @@ class MainWindow(QMainWindow):
         self.current_session_time_spent.setText(f"CURRENT SESSION:\n{spent_time.replace("day", "days")}")
 
 def start():
-    app = QApplication(sys.argv)
-
+    app = QApplication(argv)
+    app.setWindowIcon(QIcon('.\\icon.png'))
     window = MainWindow()
 
     window.show()
 
     app.exec()
 
-start()

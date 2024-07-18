@@ -1,20 +1,19 @@
 from datetime import datetime, timedelta
-import json
-import os
-import datetime 
-import psutil
-import re
+from json import load, dump
+from psutil import boot_time as ps_boot_time
+from re import sub, match
+
 def calc_time_spent() -> timedelta:
     # calculate the time up and return it
 
     # Get the boot time in seconds since the epoch
-    boot_time_timestamp = psutil.boot_time()
+    boot_time_timestamp = ps_boot_time()
 
     # Convert it to a datetime object
-    boot_time = datetime.datetime.fromtimestamp(boot_time_timestamp)
+    boot_time = datetime.fromtimestamp(boot_time_timestamp)
 
     # Get the current time
-    current_time = datetime.datetime.now()
+    current_time = datetime.now()
 
     # Calculate the difference
     uptime = current_time - boot_time
@@ -22,8 +21,8 @@ def calc_time_spent() -> timedelta:
     return uptime
 
 def get_session_boot_time():
-    boot_time =  psutil.boot_time()
-    dt_boot_time = datetime.datetime.fromtimestamp(boot_time)
+    current_but_time =  ps_boot_time()
+    dt_boot_time = datetime.fromtimestamp(current_but_time)
     dt_boot_time = dt_boot_time.replace(second=0, microsecond=0)
     return dt_boot_time
 
@@ -38,7 +37,7 @@ def load_dict_hist(history_key="today_sessions",
     file_path = f"{directory_path}/{filename}"
 
     with open(file_path, "r") as file:
-        dict_hist = json.load(file)
+        dict_hist = load(file)
         if load_whole_dict:
             return dict_hist
         return dict_hist[history_key]
@@ -52,7 +51,7 @@ def write_dict_hist(updated_dict_hist: {list}):
     file_path = f"{directory_path}/{filename}"
 
     with open(file_path, "w") as file:
-        json.dump(updated_dict_hist, file, indent=8)
+        dump(updated_dict_hist, file, indent=8)
 
 
 def get_time_boot_or_timespent(session_info: str, get_tb=True) -> str:
@@ -106,10 +105,10 @@ def string_to_timedelta(value) -> timedelta:
     args_dict["minutes"] =  int(splited[2])
     args_dict["seconds"] =  int(splited[3])
     
-    return datetime.timedelta(**args_dict)
+    return timedelta(**args_dict)
 
 def remove_letters(string):
-    return re.sub(r"[a-z]", "", string)
+    return sub(r"[a-z]", "", string)
 
 def time_spent_to_string(up_time, include_date=False, ):
     # handles any format of spent to the default days, hour?min?sec
@@ -121,11 +120,11 @@ def time_spent_to_string(up_time, include_date=False, ):
     splited = [item.split(",") for item in splited]
     splited = [elem for sublist in splited for elem in sublist]
     splited = [elem.replace(" day", "") for elem in splited]
-    splited = [remove_letters(elem) if bool(re.match(r"\d[a-z]", elem)) else elem for elem in splited]
+    splited = [remove_letters(elem) if bool(match(r"\d[a-z]", elem)) else elem for elem in splited]
     splited = [int(float(elem)) for elem in splited]
     
     if include_date:
-        current_time = datetime.datetime.now()
+        current_time = datetime.now()
         current_time_str = f"{current_time.year}-{current_time.month}-{current_time.day} {current_time.strftime("%H:%M:%S")}"
         splited.append(current_time_str)
         
