@@ -1,7 +1,4 @@
-Here’s a more polished and clear version of your instructions:
-
----
-
+# Use Monitor ⏱️
 ## How to Set It Up
 
 ### 1. Disable Fast Startup
@@ -62,7 +59,3 @@ After installing all the packages, restart your machine.
    python app_gui.py
    ```
    ![GUI Screen](image.png)
-
----
-
-This version provides a clear step-by-step guide, ensuring all necessary details are included for a smooth setup process.
